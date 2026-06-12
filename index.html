@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>WB Publications — Download Dashboard · E. Molina</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jsvectormap@1.5.3/dist/css/jsvectormap.min.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jsvectormap@1.5.3/dist/js/jsvectormap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jsvectormap@1.5.3/dist/maps/world.js"></script>
+<style>
+:root{--navy:#14324e;--blue:#0a84c1;--blue2:#0b6ca0;--teal:#27ae9a;--ink:#15293b;--mut:#6a7c8c;--bg:#eef2f6;--card:#fff;--line:#e2e9f0;}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:'Inter',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1180px;margin:0 auto;padding:26px 20px 60px}
+header{display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:14px;margin-bottom:22px}
+h1{font-size:30px;font-weight:900;letter-spacing:-.5px;margin:0;color:var(--navy);line-height:1.05}
+.sub{color:var(--mut);font-weight:600;font-size:14px;margin-top:6px}
+.badge{display:inline-flex;align-items:center;gap:8px;background:#e7f6ef;color:#0e7a5c;border:1px solid #b7e6d2;border-radius:999px;padding:7px 14px;font-size:12.5px;font-weight:700}
+.dot{width:8px;height:8px;border-radius:50%;background:#16a06f;box-shadow:0 0 0 0 rgba(22,160,111,.6);animation:p 2s infinite}
+@keyframes p{0%{box-shadow:0 0 0 0 rgba(22,160,111,.5)}70%{box-shadow:0 0 0 7px rgba(22,160,111,0)}100%{box-shadow:0 0 0 0 rgba(22,160,111,0)}}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px 18px 16px;box-shadow:0 1px 2px rgba(20,50,78,.04)}
+.kpi .n{font-size:34px;font-weight:900;letter-spacing:-1px;color:var(--navy);line-height:1}
+.kpi .l{color:var(--mut);font-weight:600;font-size:12.5px;margin-top:7px;text-transform:uppercase;letter-spacing:.4px}
+.kpi.accent{background:linear-gradient(135deg,#14324e,#0a6aa0);border:none}
+.kpi.accent .n,.kpi.accent .l{color:#fff}
+.kpi.accent .l{color:#cfe6f5}
+.grid{display:grid;gap:14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px 20px;box-shadow:0 1px 2px rgba(20,50,78,.04)}
+.card h2{font-size:15px;font-weight:800;margin:0 0 2px;color:var(--navy);letter-spacing:-.2px}
+.card .cap{color:var(--mut);font-size:12.5px;font-weight:500;margin:0 0 12px}
+.two{grid-template-columns:1.55fr 1fr}
+.two2{grid-template-columns:1fr 1fr}
+@media(max-width:860px){.kpis{grid-template-columns:repeat(2,1fr)}.two,.two2{grid-template-columns:1fr}}
+#map{height:400px;width:100%}
+.maplegend{display:flex;align-items:center;gap:8px;color:var(--mut);font-size:12px;font-weight:600;margin-top:8px}
+.scale{height:9px;width:130px;border-radius:5px;background:linear-gradient(90deg,#dbeafe,#0a84c1,#14324e)}
+.clist{list-style:none;margin:0;padding:0}
+.clist li{display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px dashed #eef2f6;font-size:13.5px}
+.clist li:last-child{border:0}
+.rank{width:20px;color:var(--mut);font-weight:700;font-size:12px}
+.cname{flex:1;font-weight:600}
+.bar{height:7px;border-radius:4px;background:var(--blue);opacity:.9}
+.cval{font-weight:800;color:var(--navy);font-variant-numeric:tabular-nums;width:62px;text-align:right}
+.foot{color:var(--mut);font-size:12px;line-height:1.6;margin-top:22px;border-top:1px solid var(--line);padding-top:16px}
+.foot b{color:var(--ink)}
+.legpill{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:middle}
+.jvectormap-tip{background:#14324e;border:none;font-family:'Inter';font-size:12px;font-weight:600;padding:5px 9px;border-radius:6px}
+</style></head>
+<body><div class="wrap">
+<header>
+  <div>
+    <h1>World Bank Publications — Download Dashboard</h1>
+    <div class="sub">Ezequiel Molina · Latin America &amp; the Caribbean · downloads across both World Bank repositories</div>
+  </div>
+  <div class="badge"><span class="dot"></span> Updated <span id="d"></span> · auto-refreshes every 2 months</div>
+</header>
+
+<div class="kpis">
+  <div class="kpi accent"><div class="n" id="k1"></div><div class="l">Total downloads</div></div>
+  <div class="kpi"><div class="n" id="k2"></div><div class="l">Publications</div></div>
+  <div class="kpi"><div class="n" id="k3"></div><div class="l">Countries reached</div></div>
+  <div class="kpi"><div class="n" id="k4"></div><div class="l">Reach in Latin America</div></div>
+</div>
+
+<div class="grid two" style="margin-bottom:14px">
+  <div class="card">
+    <h2>Where readers are</h2>
+    <p class="cap">Downloads by country (WB Documents repository · 155,735 geolocated)</p>
+    <div id="map"></div>
+    <div class="maplegend"><span>Fewer</span><span class="scale"></span><span>More downloads</span></div>
+  </div>
+  <div class="card">
+    <h2>Top countries</h2>
+    <p class="cap">Share of geolocated downloads</p>
+    <ul class="clist" id="clist"></ul>
+  </div>
+</div>
+
+<div class="grid two2" style="margin-bottom:14px">
+  <div class="card"><h2>Downloads by publication</h2><p class="cap">WB Documents <span class="legpill" style="background:#0a84c1"></span> + Open Knowledge Repository <span class="legpill" style="background:#27ae9a"></span></p><canvas id="pubChart" height="200"></canvas></div>
+  <div class="card"><h2>By region &amp; language</h2><p class="cap">Reader region (left) · publication language (right)</p>
+     <div style="display:flex;gap:6px"><div style="flex:1"><canvas id="regChart" height="190"></canvas></div><div style="flex:1"><canvas id="langChart" height="190"></canvas></div></div>
+  </div>
+</div>
+
+<div class="foot">
+  <b>Sources:</b> documentos.bancomundial.org (Documents &amp; Reports) + openknowledge.worldbank.org (OKR). Per-language download counters and the per-country breakdown are read live from both repositories.
+  &nbsp;·&nbsp; <b>Updatable:</b> this dashboard is regenerated by <b>wb_dashboard.py</b> from the latest data; a Windows scheduled task refreshes the figures <b>every 2 months</b> (or run <b>WB_refresh_now.bat</b> anytime). “United States &amp; high-income” reflects the World Bank’s residual region grouping, which here is almost entirely the U.S.
+</div>
+</div>
+
+<script>
+var D = {"date": "12 Jun 2026", "kpis": {"grand": 165927, "pubs": 8, "countries": 211, "repos": 2, "lac_pct": 28, "spanish_pct": 53}, "pubs": [{"name": "AI Revolution in Education", "wb": 71763, "okr": 2415}, {"name": "AI Revolution in Higher Education", "wb": 33596, "okr": 2708}, {"name": "El Director LIBRE (+ companion)", "wb": 23587, "okr": 0}, {"name": "Screen Time in Early Childhood Ed.", "wb": 11877, "okr": 2641}, {"name": "Ceibal \u2014 Uruguay", "wb": 6700, "okr": 0}, {"name": "100 Student Voices on AI & Education", "wb": 4544, "okr": 416}, {"name": "AI in Bulgarian School Education", "wb": 2715, "okr": 1432}, {"name": "La IA en el Aula", "wb": 1533, "okr": 0}], "langs": [["Spanish", 88410], ["English", 72824], ["Portuguese", 3658], ["Bulgarian", 1035]], "topCountries": [["United States", 72092], ["Peru", 12808], ["Chile", 5529], ["Mexico", 5507], ["China", 4361], ["Colombia", 4196], ["Singapore", 3895], ["Argentina", 3720], ["Spain", 2611], ["Brazil", 2302], ["India", 2025], ["Ecuador", 1690], ["United Kingdom", 1577], ["Canada", 1574]], "regions": [["United States & high-income", 73667], ["Latin America & Caribbean", 43012], ["East Asia & Pacific", 14465], ["Europe & Central Asia", 14219], ["South Asia", 3209], ["Unattributed", 2872], ["Sub-Saharan Africa", 2396], ["Middle East & N. Africa", 1843], ["Unattributed", 52]], "isoMap": {"US": 72092, "PE": 12808, "CL": 5529, "MX": 5507, "CN": 4361, "CO": 4196, "SG": 3895, "AR": 3720, "ES": 2611, "BR": 2302, "IN": 2025, "EC": 1690, "GB": 1577, "CA": 1574, "FR": 1407, "DE": 1352, "NL": 1271, "UY": 1261, "PY": 1172, "HK": 1162, "BO": 951, "VE": 940, "PH": 834, "PT": 697, "VN": 694, "JP": 642, "ID": 611, "ZA": 577, "BG": 574, "IE": 518, "AU": 512, "CR": 493, "PK": 487, "PL": 469, "SV": 461, "GT": 446, "TR": 437, "SE": 398, "KR": 395, "NG": 388, "BD": 371, "PA": 350, "TH": 333, "MY": 329, "IT": 297, "KE": 276, "EG": 285, "DO": 275, "NZ": 275, "SA": 252, "HN": 247, "RU": 247, "AE": 230, "UA": 217, "DK": 198, "CU": 191, "TW": 183, "MA": 177, "NI": 164, "AT": 160, "LK": 157, "ET": 155, "CH": 147, "FI": 144, "RO": 136, "PR": 130, "IL": 129, "IQ": 126, "KZ": 121, "NP": 120, "GR": 113, "DZ": 112, "UZ": 107, "CZ": 105, "IR": 106, "GH": 102, "KH": 101, "LB": 94, "OM": 88, "MZ": 79, "LT": 74, "NO": 74, "TZ": 71, "ZW": 69, "HU": 68, "JO": 68, "LV": 65, "SO": 65, "UG": 63, "JM": 60, "AO": 56, "QA": 55, "MU": 53, "CM": 51, "AZ": 49, "AL": 44, "RS": 43, "GE": 43, "RW": 42, "SN": 41, "TN": 38, "SK": 36, "TT": 34, "MW": 33, "PG": 33, "ZM": 32, "AM": 32, "MN": 28, "CI": 27, "MG": 27, "MM": 27, "BA": 26, "MO": 26, "KW": 26, "BH": 26, "MD": 25, "HR": 23, "LY": 20, "CY": 19, "CV": 20, "NA": 19, "EE": 19, "BY": 19, "MV": 18, "LS": 16, "AF": 16, "BN": 17, "MK": 16, "BB": 15, "BT": 15, "BW": 14, "ST": 13, "MR": 13, "SZ": 13, "YE": 12, "SI": 11, "KG": 12, "BJ": 11, "FJ": 11, "HT": 11, "SY": 11, "GY": 10, "LU": 10, "LA": 8, "LR": 8, "SC": 8, "ER": 7, "NE": 6, "TM": 6, "CD": 11, "BS": 6, "DM": 5, "SD": 5, "TG": 5, "BF": 5, "TJ": 5, "IS": 5, "SR": 5, "SS": 4, "CF": 4, "SB": 4, "MT": 4, "ML": 3, "CG": 3, "BZ": 2, "TL": 2, "SL": 2, "GQ": 2, "GN": 2, "GM": 3, "GW": 1, "TD": 1, "BI": 1, "GA": 1, "PF": 1, "MC": 1}, "grandWb": 156315, "grandOkr": 9612};
+var fmt = function(n){return n.toLocaleString('en-US');};
+document.getElementById('d').textContent = D.date;
+document.getElementById('k1').textContent = fmt(D.kpis.grand);
+document.getElementById('k2').textContent = D.kpis.pubs;
+document.getElementById('k3').textContent = D.kpis.countries;
+document.getElementById('k4').textContent = D.kpis.lac_pct + '%';
+
+// top countries list
+(function(){
+  var max = D.topCountries[0][1], ul = document.getElementById('clist'), tot = D.kpis.grand;
+  D.topCountries.forEach(function(c,i){
+    var li=document.createElement('li');
+    var pct=(100*c[1]/155735).toFixed(1);
+    li.innerHTML='<span class="rank">'+(i+1)+'</span><span class="cname">'+c[0]+'</span>'+
+      '<span class="bar" style="width:'+Math.max(6,70*c[1]/max)+'px"></span>'+
+      '<span class="cval">'+fmt(c[1])+'</span>';
+    ul.appendChild(li);
+  });
+})();
+
+// world choropleth
+(function(){
+  try{
+    var real=D.isoMap, maxv=0;
+    for(var k in real){ var l=Math.log(real[k]+1); if(l>maxv)maxv=l; }
+    function mix(t){ function L(a,b){return Math.round(a+(b-a)*t);} return 'rgb('+L(220,8)+','+L(233,60)+','+L(247,94)+')'; }
+    var colors={};
+    for(var c in real){ colors[c]=mix(maxv?Math.log(real[c]+1)/maxv:0); }
+    var map=new jsVectorMap({
+      selector:'#map', map:'world', zoomButtons:true, backgroundColor:'transparent',
+      regionStyle:{initial:{fill:'#e6ebf1',stroke:'#ffffff',strokeWidth:.5},hover:{fillOpacity:.8}},
+      onRegionTooltipShow:function(e,tip,code){ var v=real[code]; tip.text(tip.text()+': '+(v?fmt(v)+' downloads':'no downloads'),true); }
+    });
+    function paint(){ var svg=document.querySelector('#map svg'); if(!svg) return; Object.keys(colors).forEach(function(code){ var el=svg.querySelector('path[data-code="'+code+'"]'); if(el) el.setAttribute('fill',colors[code]); }); }
+    paint(); setTimeout(paint,250); setTimeout(paint,800);
+  }catch(err){ document.getElementById('map').innerHTML='<div style="color:#6a7c8c;padding:40px;text-align:center">Map needs an internet connection to load.</div>'; }
+})();
+
+var baseOpts={plugins:{legend:{labels:{font:{family:'Inter',size:11},boxWidth:10,boxHeight:10}}},maintainAspectRatio:false};
+
+// publications stacked bar
+new Chart(document.getElementById('pubChart'),{type:'bar',
+  data:{labels:D.pubs.map(function(p){return p.name.length>26?p.name.slice(0,25)+'…':p.name;}),
+    datasets:[{label:'WB Documents',data:D.pubs.map(function(p){return p.wb;}),backgroundColor:'#0a84c1',borderRadius:4},
+              {label:'OKR',data:D.pubs.map(function(p){return p.okr;}),backgroundColor:'#27ae9a',borderRadius:4}]},
+  options:Object.assign({},baseOpts,{indexAxis:'y',scales:{x:{stacked:true,grid:{color:'#eef2f6'},ticks:{font:{family:'Inter',size:10}}},y:{stacked:true,grid:{display:false},ticks:{font:{family:'Inter',size:10.5,weight:'600'}}}},plugins:{legend:{position:'bottom',labels:{font:{family:'Inter',size:11},boxWidth:10}}}})});
+
+var REGCOL=['#14324e','#0a84c1','#27ae9a','#7bb8e0','#f2a93b','#9b7fd4','#cbd6e0','#aebfcd'];
+new Chart(document.getElementById('regChart'),{type:'doughnut',
+  data:{labels:D.regions.map(function(r){return r[0];}),datasets:[{data:D.regions.map(function(r){return r[1];}),backgroundColor:REGCOL,borderWidth:2,borderColor:'#fff'}]},
+  options:Object.assign({},baseOpts,{cutout:'58%',plugins:{legend:{position:'bottom',labels:{font:{family:'Inter',size:9.5},boxWidth:9,padding:6}}}})});
+
+var LANGCOL=['#e1693a','#0a84c1','#27ae9a','#b9c4cf'];
+new Chart(document.getElementById('langChart'),{type:'doughnut',
+  data:{labels:D.langs.map(function(l){return l[0];}),datasets:[{data:D.langs.map(function(l){return l[1];}),backgroundColor:LANGCOL,borderWidth:2,borderColor:'#fff'}]},
+  options:Object.assign({},baseOpts,{cutout:'58%',plugins:{legend:{position:'bottom',labels:{font:{family:'Inter',size:9.5},boxWidth:9,padding:6}}}})});
+</script>
+</body></html>
